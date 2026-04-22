@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import { useLanguage } from '../context/LanguageContext'
 
 interface AlertModalProps {
   message: string
@@ -6,6 +7,7 @@ interface AlertModalProps {
 }
 
 export const AlertModal: React.FC<AlertModalProps> = ({ message, onClose }) => {
+  const { t } = useLanguage()
   const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({ message, onClose }) => {
           <pre className="alert-modal-text">{message}</pre>
         </div>
         <div className="alert-modal-footer">
-          <button className="btn btn-primary" onClick={onClose}>确定</button>
+          <button className="btn btn-primary" onClick={onClose}>{t.common.ok}</button>
         </div>
       </div>
     </div>

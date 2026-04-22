@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import { useLanguage } from '../context/LanguageContext'
 
 interface ConfirmModalProps {
   message: string
@@ -7,6 +8,7 @@ interface ConfirmModalProps {
 }
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({ message, onConfirm, onCancel }) => {
+  const { t } = useLanguage()
   const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -28,8 +30,8 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({ message, onConfirm, 
           <pre className="alert-modal-text">{message}</pre>
         </div>
         <div className="alert-modal-footer">
-          <button className="btn" onClick={onCancel}>取消</button>
-          <button className="btn btn-danger" onClick={onConfirm}>确定</button>
+          <button className="btn" onClick={onCancel}>{t.common.cancel}</button>
+          <button className="btn btn-danger" onClick={onConfirm}>{t.common.confirm}</button>
         </div>
       </div>
     </div>

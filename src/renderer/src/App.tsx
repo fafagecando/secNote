@@ -4,6 +4,8 @@ import { Sidebar } from './components/Sidebar'
 import { Editor } from './components/Editor'
 import { NotePreview } from './components/NotePreview'
 import { AlertProvider, AlertContext } from './context/AlertContext'
+import { LanguageProvider, useLanguage } from './context/LanguageContext'
+import type { Language } from '../../shared/i18n'
 import './styles/main.css'
 
 const AppContent: React.FC = () => {
@@ -11,6 +13,7 @@ const AppContent: React.FC = () => {
   const currentNote = useNoteStore((state) => state.currentNote)
   const createNote = useNoteStore((state) => state.createNote)
   const { showAbout } = useContext(AlertContext)
+  const { setLanguage } = useLanguage()
 
   useEffect(() => {
     loadNotes()
@@ -28,6 +31,12 @@ const AppContent: React.FC = () => {
       }
     })
   }, [createNote, showAbout])
+
+  useEffect(() => {
+    window.secNoteApi.onLanguageChange((lang: string) => {
+      setLanguage(lang as Language)
+    })
+  }, [setLanguage])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -55,8 +64,10 @@ const AppContent: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <AlertProvider>
-      <AppContent />
-    </AlertProvider>
+    <LanguageProvider>
+      <AlertProvider>
+        <AppContent />
+      </AlertProvider>
+    </LanguageProvider>
   )
 }

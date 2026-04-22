@@ -1,10 +1,12 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { useNoteStore } from '../store/noteStore'
+import { useLanguage } from '../context/LanguageContext'
 
 export const Editor: React.FC = () => {
   const currentNote = useNoteStore((state) => state.currentNote)
   const saveNote = useNoteStore((state) => state.saveNote)
   const setCurrentNote = useNoteStore((state) => state.setCurrentNote)
+  const { t } = useLanguage()
 
   const [content, setContent] = useState('')
   const [isPreview, setIsPreview] = useState(false)
@@ -47,7 +49,6 @@ export const Editor: React.FC = () => {
   useEffect(() => {
     if (!currentNote) return
 
-    // Skip autosave when content matches last saved state.
     if (content === lastSavedContentRef.current) return
 
     if (autoSaveTimerRef.current !== null) {
@@ -82,25 +83,25 @@ export const Editor: React.FC = () => {
         <div className="editor-header">
           <h2>{currentNote.title}</h2>
           <div className="editor-actions">
-          {isAutoSaving && <span className="editor-autosave-status">自动保存中…</span>}
+          {isAutoSaving && <span className="editor-autosave-status">{t.editor.autoSaving}</span>}
           <button className={`btn ${isPreview ? '' : 'btn-primary'}`} onClick={() => setIsPreview(false)}>
-            编辑
+            {t.editor.edit}
           </button>
           <button className={`btn ${isPreview ? 'btn-primary' : ''}`} onClick={() => setIsPreview(true)}>
-            预览
+            {t.editor.preview}
           </button>
           <button className="btn btn-success" onClick={handleSave}>
-            保存
+            {t.editor.save}
           </button>
           <button className="btn" onClick={handleClose}>
-            关闭
+            {t.editor.close}
           </button>
         </div>
       </div>
 
       {isPreview ? (
         <div className="preview-pane">
-          <p className="preview-placeholder">预览模式 - Markdown 渲染功能正在开发中（阶段2）</p>
+          <p className="preview-placeholder">{t.editor.previewPlaceholder}</p>
           <pre className="preview-raw">{content}</pre>
         </div>
       ) : (
@@ -109,7 +110,7 @@ export const Editor: React.FC = () => {
           className="editor-textarea"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="请使用 Markdown 语法书写笔记..."
+          placeholder={t.editor.placeholder}
           spellCheck={false}
         />
       )}

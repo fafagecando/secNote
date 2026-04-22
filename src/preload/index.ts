@@ -48,6 +48,9 @@ const api = {
     ipcRenderer.on('menu:new-note', () => callback('new-note'))
     ipcRenderer.on('menu:about', () => callback('menu:about'))
   },
+  onLanguageChange: (callback: (lang: string) => void) => {
+    ipcRenderer.on('menu:languageChanged', (_event, lang: string) => callback(lang))
+  },
 }
 
 contextBridge.exposeInMainWorld('secNoteApi', api)

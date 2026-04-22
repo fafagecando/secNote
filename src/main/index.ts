@@ -16,13 +16,32 @@ try {
   // If this fails, Electron will fall back to defaults.
 }
 
+import type { Language } from '../shared/i18n'
+import { translations, languageNames } from '../shared/i18n'
+
+let currentLang: Language = 'zh-CN'
+
 function createMenu() {
+  const t = translations[currentLang].menu
+  const langItems: Electron.MenuItemConstructorOptions[] = (Object.keys(languageNames) as Language[]).map((lang) => ({
+    label: languageNames[lang],
+    type: 'radio' as const,
+    checked: lang === currentLang,
+    click: () => {
+      currentLang = lang
+      createMenu()
+      if (mainWindow) {
+        mainWindow.webContents.send('menu:languageChanged', lang)
+      }
+    },
+  }))
+
   const template: Electron.MenuItemConstructorOptions[] = [
     {
-      label: '文件',
+      label: t.file,
       submenu: [
         {
-          label: '新建笔记',
+          label: t.newNote,
           accelerator: 'CmdOrCtrl+N',
           click: () => {
             mainWindow?.webContents.send('menu:new-note')
@@ -30,47 +49,51 @@ function createMenu() {
         },
         { type: 'separator' },
         {
-          label: '退出',
+          label: t.exit,
           accelerator: 'CmdOrCtrl+Q',
           role: 'quit'
         }
       ]
     },
     {
-      label: '编辑',
+      label: t.edit,
       submenu: [
-        { label: '撤销', role: 'undo' },
-        { label: '重做', role: 'redo' },
+        { label: t.undo, role: 'undo' },
+        { label: t.redo, role: 'redo' },
         { type: 'separator' },
-        { label: '剪切', role: 'cut' },
-        { label: '复制', role: 'copy' },
-        { label: '粘贴', role: 'paste' },
-        { label: '全选', role: 'selectAll' }
+        { label: t.cut, role: 'cut' },
+        { label: t.copy, role: 'copy' },
+        { label: t.paste, role: 'paste' },
+        { label: t.selectAll, role: 'selectAll' }
       ]
     },
     {
-      label: '视图',
+      label: t.view,
       submenu: [
-        { label: '重新加载', role: 'reload' },
-        { label: '强制重载', role: 'forceReload' },
-        { label: '开发者工具', role: 'toggleDevTools' },
+        { label: t.reload, role: 'reload' },
+        { label: t.forceReload, role: 'forceReload' },
+        { label: t.devTools, role: 'toggleDevTools' },
         { type: 'separator' },
-        { label: '实际大小', role: 'resetZoom' },
-        { label: '放大', role: 'zoomIn' },
-        { label: '缩小', role: 'zoomOut' },
+        { label: t.actualSize, role: 'resetZoom' },
+        { label: t.zoomIn, role: 'zoomIn' },
+        { label: t.zoomOut, role: 'zoomOut' },
         { type: 'separator' },
         { 
-          label: '全屏', 
+          label: t.fullscreen, 
           role: 'togglefullscreen',
           accelerator: 'F11'
         }
       ]
     },
     {
-      label: '帮助',
+      label: t.language,
+      submenu: langItems
+    },
+    {
+      label: t.help,
       submenu: [
         {
-          label: '关于 secNote',
+          label: t.about,
           click: () => {
             if (mainWindow) {
               mainWindow.webContents.send('menu:about')
@@ -79,7 +102,7 @@ function createMenu() {
         },
         { type: 'separator' },
         {
-          label: '访问 GitHub 仓库',
+          label: t.visitGitHub,
           click: () => {
             shell.openExternal('https://github.com/fafagecando/secNote')
           }
